@@ -1,6 +1,6 @@
 'use client';
 
-import { Box as ChakraBox } from '@chakra-ui/react';
+import { Box as ChakraBox, ResponsiveValue, FlexDirection } from '@chakra-ui/react';
 
 interface BoxProps {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ interface BoxProps {
   boxShadow?: string;
   minH?: string;
   display?: string;
-  flexDirection?: string;
+  flexDirection?: ResponsiveValue<FlexDirection>;
   position?: string;
   top?: number;
   right?: number;
