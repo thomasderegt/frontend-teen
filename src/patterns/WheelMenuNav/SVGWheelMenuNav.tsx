@@ -21,6 +21,7 @@ interface Item {
   icon?: string;
   status?: 'completed' | 'in-progress' | 'locked' | 'available';
   progress?: number;
+  phonetic?: string; // Arabic phonetic
 }
 
 interface SVGWheelMenuNavProps {

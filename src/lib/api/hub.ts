@@ -29,13 +29,13 @@ export interface HubData {
 }
 
 // Outward Wheel Data (Original - Iman, Ibadah, etc.)
-const outwardWheelData = {
+const outwardWheelData: HubData = {
   hub: {
     id: 'allah',
     title: 'Allah',
     description: 'De centrale hub van de Wheel of Islam',
     totalSpokes: 8,
-    type: 'outward'
+    type: 'outward' as const
   },
   spokes: [
     {
@@ -154,13 +154,13 @@ const outwardWheelData = {
 };
 
 // Inward Wheel Data (Spirituality Journey)
-const inwardWheelData = {
+const inwardWheelData: HubData = {
   hub: {
     id: 'allah',
     title: 'Wheel of Islam',
     description: 'Insight. Knowledge. Growth',
     totalSpokes: 10,
-    type: 'inward'
+    type: 'inward' as const
   },
   spokes: [
     {

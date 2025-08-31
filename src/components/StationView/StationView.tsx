@@ -36,6 +36,13 @@ interface ContentData {
   text: string;
   children?: ContentData[];
   order?: number;
+  options?: QuizOption[]; // Voor quiz vragen
+}
+
+interface QuizOption {
+  id: string;
+  text: string;
+  isCorrect: boolean;
 }
 
 interface StationViewProps {
@@ -51,7 +58,7 @@ export default function StationView({
 }: StationViewProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
-  const [quizAnswers, setQuizAnswers] = useState<Record<string, string>>({});
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, boolean>>({});
   const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
   const toast = useToast();
 
@@ -75,10 +82,10 @@ export default function StationView({
     });
   };
 
-  const handleQuizAnswer = (questionId: string, selectedOption: string, isCorrect: boolean) => {
+  const handleQuizAnswer = (selectedOptionId: string, isCorrect: boolean) => {
     setQuizAnswers(prev => ({
       ...prev,
-      [questionId]: selectedOption
+      [selectedOptionId]: isCorrect
     }));
 
     // For demo purposes, mark step as complete after answering any quiz question

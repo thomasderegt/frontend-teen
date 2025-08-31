@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Text, useMediaQuery } from '@chakra-ui/react';
+import { Box, Text, useMediaQuery, ResponsiveValue } from '@chakra-ui/react';
 
 interface NavItem {
   id: string;
@@ -41,7 +41,7 @@ export default function HeaderNav({
           onClick: item.onClick,
           cursor: item.isDisabled ? 'not-allowed' : 'pointer',
           opacity: item.isDisabled ? 0.5 : 1,
-          pointerEvents: item.isDisabled ? 'none' : 'auto',
+          pointerEvents: (item.isDisabled ? 'none' : 'auto') as ResponsiveValue<'none' | 'auto'>,
           _hover: !item.isDisabled ? {
             color: 'primary.600',
             transform: 'translateY(-1px)'
