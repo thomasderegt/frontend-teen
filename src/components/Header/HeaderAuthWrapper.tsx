@@ -74,7 +74,7 @@ export default function HeaderAuthWrapper({ children }: HeaderAuthWrapperProps) 
   const isAuthenticated = status === 'authenticated';
   const actions = isAuthenticated ? authActions : guestActions;
   const userName = isAuthenticated ? session?.user?.name || 'Gebruiker' : 'Gast';
-  const userAvatar = null;
+  const userAvatar = undefined;
 
   return (
     <>

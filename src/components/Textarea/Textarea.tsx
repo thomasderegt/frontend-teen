@@ -87,7 +87,7 @@ export default function Textarea({
             borderColor: colors.primary[500], 
             boxShadow: `0 0 0 1px ${colors.primary[500]}` 
           },
-          _invalid: { borderColor: colors.red[500] }
+          _invalid: { borderColor: colors.error[500] }
         };
       case 'filled':
         return {
@@ -99,7 +99,7 @@ export default function Textarea({
             borderColor: colors.primary[500],
             boxShadow: `0 0 0 1px ${colors.primary[500]}` 
           },
-          _invalid: { borderColor: colors.red[500] }
+          _invalid: { borderColor: colors.error[500] }
         };
       case 'flushed':
         return {
@@ -113,7 +113,7 @@ export default function Textarea({
             borderBottomColor: colors.primary[500],
             boxShadow: 'none'
           },
-          _invalid: { borderBottomColor: colors.red[500] }
+          _invalid: { borderBottomColor: colors.error[500] }
         };
       case 'unstyled':
         return {

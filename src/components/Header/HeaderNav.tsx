@@ -35,33 +35,59 @@ export default function HeaderNav({
       gap={6}
       className={className}
     >
-      {items.map((item) => (
-        <Box
-          key={item.id}
-          as={item.href ? 'a' : 'button'}
-          href={item.href}
-          onClick={item.onClick}
-          cursor={item.isDisabled ? 'not-allowed' : 'pointer'}
-          opacity={item.isDisabled ? 0.5 : 1}
-          pointerEvents={item.isDisabled ? 'none' : 'auto'}
-          _hover={!item.isDisabled ? {
+      {items.map((item) => {
+        const commonProps = {
+          key: item.id,
+          onClick: item.onClick,
+          cursor: item.isDisabled ? 'not-allowed' : 'pointer',
+          opacity: item.isDisabled ? 0.5 : 1,
+          pointerEvents: item.isDisabled ? 'none' : 'auto',
+          _hover: !item.isDisabled ? {
             color: 'primary.600',
             transform: 'translateY(-1px)'
-          } : undefined}
-          transition="all 0.2s"
-        >
-          <Text
-            fontSize="md"
-            fontWeight={item.isActive ? 'semibold' : 'medium'}
-            color={item.isActive ? 'primary.600' : 'gray.700'}
-            borderBottom={item.isActive ? '2px solid' : 'none'}
-            borderColor="primary.600"
-            pb={1}
+          } : undefined,
+          transition: "all 0.2s"
+        };
+
+        if (item.href) {
+          return (
+            <Box
+              as="a"
+              href={item.href}
+              {...commonProps}
+            >
+              <Text
+                fontSize="md"
+                fontWeight={item.isActive ? 'semibold' : 'medium'}
+                color={item.isActive ? 'primary.600' : 'gray.700'}
+                borderBottom={item.isActive ? '2px solid' : 'none'}
+                borderColor="primary.600"
+                pb={1}
+              >
+                {item.label}
+              </Text>
+            </Box>
+          );
+        }
+
+        return (
+          <Box
+            as="button"
+            {...commonProps}
           >
-            {item.label}
-          </Text>
-        </Box>
-      ))}
+            <Text
+              fontSize="md"
+              fontWeight={item.isActive ? 'semibold' : 'medium'}
+              color={item.isActive ? 'primary.600' : 'gray.700'}
+              borderBottom={item.isActive ? '2px solid' : 'none'}
+              borderColor="primary.600"
+              pb={1}
+            >
+              {item.label}
+            </Text>
+          </Box>
+        );
+      })}
     </Box>
   );
 } 
