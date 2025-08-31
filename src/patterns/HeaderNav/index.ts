@@ -1,0 +1,1 @@
+export { default as HeaderNavPattern } from './HeaderNavPattern'; 

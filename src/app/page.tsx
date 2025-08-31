@@ -1,103 +1,241 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import { Box, HStack, VStack, Button, Text, useToast, Spinner, Center } from '@chakra-ui/react';
+import { useRouter } from 'next/navigation';
+import SVGWheelMenuNav from '@/patterns/WheelMenuNav';
+import { getHub, getWheelTypes } from '@/lib/api/hub';
+
+export default function HomePage() {
+  const [selectedWheelType, setSelectedWheelType] = useState<'outward' | 'inward'>('inward');
+  const [selectedVariant, setSelectedVariant] = useState<'circle' | 'donut'>('donut');
+  const [wheelData, setWheelData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [spinRotation, setSpinRotation] = useState(0);
+  const toast = useToast();
+  const router = useRouter();
+  const wheelTypes = getWheelTypes();
+
+  useEffect(() => {
+    const loadWheelData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getHub(selectedWheelType);
+        setWheelData(data);
+      } catch (err) {
+        setError('Er is een fout opgetreden bij het laden van de wheel data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadWheelData();
+  }, [selectedWheelType]);
+
+  const handleWheelTypeChange = (wheelType: 'outward' | 'inward') => {
+    setSelectedWheelType(wheelType);
+    const wheelInfo = wheelTypes.find(w => w.id === wheelType);
+    
+    toast({
+      title: wheelInfo?.title,
+      description: wheelInfo?.description,
+      status: 'info',
+      duration: 2000,
+      isClosable: true,
+    });
+  };
+
+  const handleItemClick = (item: any, index: number) => {
+    // Show toast notification
+    toast({
+      title: `Clicked: ${item.title}`,
+      description: `ID: ${item.id}`,
+      status: 'info',
+      duration: 2000,
+      isClosable: true,
+    });
+    
+    // Navigate to wakefulness
+    if (item.id === 'wakefulness') {
+      router.push('/intro-wakefulness');
+      return;
+    }
+    
+    if (item.title.toLowerCase().includes('wakefulness')) {
+      router.push('/intro-wakefulness');
+      return;
+    }
+    
+    // Navigate based on item type or ID
+    if (item.id === 'prayer' || item.title.toLowerCase().includes('prayer')) {
+      router.push('/spoke/prayer');
+    } else if (item.id === 'quran' || item.title.toLowerCase().includes('quran')) {
+      router.push('/spoke/quran');
+    } else if (item.id === 'dhikr' || item.title.toLowerCase().includes('dhikr')) {
+      router.push('/spoke/dhikr');
+    } else if (item.id === 'charity' || item.title.toLowerCase().includes('charity')) {
+      router.push('/spoke/charity');
+    } else if (item.id === 'fasting' || item.title.toLowerCase().includes('fasting')) {
+      router.push('/spoke/fasting');
+    } else if (item.id === 'hajj' || item.title.toLowerCase().includes('hajj')) {
+      router.push('/spoke/hajj');
+    } else {
+      // Default fallback - navigate to spoke with item ID
+      router.push(`/spoke/${item.id}`);
+    }
+  };
+
+  const handleSpinWheel = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const newRotation = (spinRotation + 45) % 360;
+    setSpinRotation(newRotation);
+  };
+
+  if (loading) {
+    return (
+      <Box minH="100vh" p={4}>
+        <Center minH="400px">
+          <VStack spacing={4}>
+            <Spinner size="lg" color="white" />
+            <Text color="white">Loading wheel data...</Text>
+          </VStack>
+        </Center>
+      </Box>
+    );
+  }
+
+  if (error || !wheelData) {
+    return (
+      <Box minH="100vh" p={4}>
+        <Center minH="400px">
+          <VStack spacing={4} textAlign="center">
+            <Text fontSize="lg" color="red.400" mb={4}>
+              {error || 'Er is een fout opgetreden bij het laden van de wheel data.'}
+            </Text>
+            <Text fontSize="sm" color="gray.400">
+              Probeer de pagina te verversen of neem contact op met de beheerder.
+            </Text>
+            <Button 
+              onClick={() => window.location.reload()} 
+              colorScheme="blue"
+            >
+              Ververs Pagina
+            </Button>
+          </VStack>
+        </Center>
+      </Box>
+    );
+  }
+
+  // Convert hub data to center format
+  const center = {
+    id: wheelData.hub.id,
+    title: wheelData.hub.title,
+    description: wheelData.hub.description,
+    image: wheelData.hub.image
+  };
+
+  // Convert spokes data to items format
+  const items = wheelData.spokes.map((spoke: any) => ({
+    id: spoke.id,
+    title: spoke.title,
+    description: spoke.description,
+    icon: spoke.icon,
+    status: spoke.status,
+    progress: spoke.progress,
+    lessonsCompleted: spoke.lessonsCompleted,
+    totalLessons: spoke.totalLessons,
+    category: spoke.category,
+    estimatedDuration: spoke.estimatedDuration
+  }));
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <Box 
+      minH="100vh" 
+      p={4} 
+      display="flex" 
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+    >
+      {/* Wheel Content - Always use donut mode */}
+      <Box position="relative" flex="1" display="flex" alignItems="center" justifyContent="center">
+        
+        {/* Center - blijft stil staan */}
+        <Box position="absolute" top="50%" left="50%" transform="translate(-50%, -50%)" zIndex={1}>
+          <SVGWheelMenuNav
+            center={center}
+            items={[]}
+            size="lg"
+            variant="donut"
+            showConnectingLines={false}
+            showCenter={true}
+            onItemClick={handleItemClick}
+          />
+        </Box>
+        
+        {/* Segments - draaien */}
+        <Box 
+          style={{ 
+            transform: `rotate(${spinRotation}deg)`,
+            transition: 'transform 0.5s ease-in-out',
+            position: 'relative',
+            zIndex: 5
+          }}
+        >
+          <SVGWheelMenuNav
+            center={center}
+            items={items}
+            size="lg"
+            variant="donut"
+            showConnectingLines={true}
+            showCenter={false}
+            onItemClick={handleItemClick}
+          />
+        </Box>
+      </Box>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      {/* Spin Button */}
+      <Box mt={6} textAlign="center" position="relative" zIndex={10}>
+        <Button
+          onClick={handleSpinWheel}
+          onMouseDown={(e) => e.preventDefault()}
+          onMouseUp={(e) => e.preventDefault()}
+          size="lg"
+          colorScheme="primary"
+          bg="white"
+          color="black"
+          _hover={{
+            bg: 'gray.100',
+            transform: 'scale(1.05)'
+          }}
+          _active={{
+            bg: 'gray.200'
+          }}
+          _focus={{
+            bg: 'gray.100',
+            outline: 'none'
+          }}
+          transition="all 0.2s"
+          borderRadius="full"
+          px={8}
+          py={4}
+          fontSize="lg"
+          fontWeight="bold"
+          boxShadow="lg"
+          userSelect="none"
+          cursor="pointer"
+          position="relative"
+          zIndex={10}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          Spin
+        </Button>
+      </Box>
+    </Box>
   );
 }
