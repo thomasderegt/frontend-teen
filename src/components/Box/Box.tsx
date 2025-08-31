@@ -13,9 +13,9 @@ interface BoxProps {
   opacity?: number;
   boxShadow?: string;
   minH?: string;
-  display?: string;
+  display?: ResponsiveValue<'block' | 'inline-block' | 'inline' | 'flex' | 'inline-flex' | 'grid' | 'inline-grid' | 'table' | 'inline-table' | 'table-row' | 'table-cell' | 'table-column' | 'table-column-group' | 'table-footer-group' | 'table-header-group' | 'table-row-group' | 'contents' | 'list-item' | 'none'>;
   flexDirection?: ResponsiveValue<'row' | 'row-reverse' | 'column' | 'column-reverse'>;
-  position?: string;
+  position?: ResponsiveValue<'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'>;
   top?: number;
   right?: number;
   maxW?: string;
